@@ -26,7 +26,23 @@ export default async function Home() {
             </div>
             <span className="text-xl font-bold text-slate-900">Pixel</span>
           </div>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-4 sm:gap-6">
+            <a
+              href="https://github.com/devRavit/pixel/pulls"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-slate-600 transition-colors hover:text-slate-900"
+            >
+              PRs
+            </a>
+            <a
+              href="https://github.com/devRavit/stash/pulls"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-slate-600 transition-colors hover:text-slate-900"
+            >
+              Stash PRs
+            </a>
             <a
               href="https://github.com/devRavit/pixel"
               target="_blank"
