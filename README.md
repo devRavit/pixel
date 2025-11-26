@@ -4,23 +4,15 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-> [![v0.0.2](https://img.shields.io/badge/v0.0.2-purple)](./docs/CHANGELOG.md#v002) `2025.11.27 01:00`
-> - Next.js 15 App Router 구조로 전환
+[![v0.0.2](https://img.shields.io/badge/v0.0.2-purple)](./docs/CHANGELOG.md#v002) `2025.11.27 01:00`
+- Next.js 15 App Router 구조로 전환
+- SSR 기반 Health Check API 호출 구현
+- ESLint flat config (TypeScript) 적용
 
-> [![- SSR 기반 Health Check API 호출 구현](https://img.shields.io/badge/- SSR 기반 Health Check API 호출 구현-gray)](./docs/CHANGELOG.md#- SSR 기반 Health Check API 호출 구현) ``
-
-> [![- ESLint flat config (TypeScript) 적용](https://img.shields.io/badge/- ESLint flat config (TypeScript) 적용-gray)](./docs/CHANGELOG.md#- ESLint flat config (TypeScript) 적용) ``
-
-> [![](https://img.shields.io/badge/-gray)](./docs/CHANGELOG.md#) ``
-
-> [![v0.0.1](https://img.shields.io/badge/v0.0.1-gray)](./docs/CHANGELOG.md#v001) `2025.11.26 22:00`
-> - Vite + React + TypeScript 템플릿 기반 생성
-
-> [![- Node.js 25.x 환경 설정](https://img.shields.io/badge/- Node.js 25.x 환경 설정-gray)](./docs/CHANGELOG.md#- Nodejs 25x 환경 설정) ``
-
-> [![- README.md, CHANGELOG.md 작성](https://img.shields.io/badge/- README.md, CHANGELOG.md 작성-gray)](./docs/CHANGELOG.md#- READMEmd, CHANGELOGmd 작성) ``
-
-> [![](https://img.shields.io/badge/-gray)](./docs/CHANGELOG.md#) ``
+[![v0.0.1](https://img.shields.io/badge/v0.0.1-gray)](./docs/CHANGELOG.md#v001) `2025.11.26 22:00`
+- Vite + React + TypeScript 템플릿 기반 생성
+- Node.js 25.x 환경 설정
+- README.md, CHANGELOG.md 작성
 
 [전체 변경 내역 →](./docs/CHANGELOG.md)
 
