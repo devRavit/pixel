@@ -13,22 +13,35 @@ async function getHealth() {
 
 export default async function Home() {
   const health = await getHealth()
+  const isHealthy = health.status === 'UP'
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'system-ui' }}>
-      <h1>Pixel</h1>
-      <p>Frontend for Stash API</p>
+    <main className="min-h-screen p-8">
+      <div className="mx-auto max-w-2xl">
+        <h1 className="text-4xl font-bold text-gray-900">Pixel</h1>
+        <p className="mt-2 text-lg text-gray-600">Frontend for Stash API</p>
 
-      <hr style={{ margin: '2rem 0' }} />
+        <hr className="my-8 border-gray-200" />
 
-      <h2>API Health Check</h2>
-      <pre style={{
-        background: '#f4f4f4',
-        padding: '1rem',
-        borderRadius: '8px'
-      }}>
-        {JSON.stringify(health, null, 2)}
-      </pre>
+        <section>
+          <h2 className="text-2xl font-semibold text-gray-800">API Health Check</h2>
+          <div className="mt-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span
+                className={`inline-block h-3 w-3 rounded-full ${
+                  isHealthy ? 'bg-green-500' : 'bg-red-500'
+                }`}
+              />
+              <span className={`font-medium ${isHealthy ? 'text-green-700' : 'text-red-700'}`}>
+                {health.status}
+              </span>
+            </div>
+            <pre className="mt-4 overflow-x-auto rounded-md bg-gray-100 p-4 text-sm text-gray-700">
+              {JSON.stringify(health, null, 2)}
+            </pre>
+          </div>
+        </section>
+      </div>
     </main>
   )
 }
