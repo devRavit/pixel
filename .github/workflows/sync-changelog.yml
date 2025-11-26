@@ -19,53 +19,45 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract recent changes
-        id: changelog
-        run: |
-          # 최근 3개 버전 추출
-          awk '
-            /^## v[0-9]+\.[0-9]+\.[0-9]+/ {
-              if (count >= 3) exit
-              count++
-              version = $2
-              getline; gsub(/`/, "", $0); datetime = $0
-              getline; summary = $0
-              items = ""
-              while (getline > 0) {
-                if (/^---$/ || /^## v/) break
-                if (/^- /) items = items $0 "\n"
-              }
-              print version "|" datetime "|" summary "|" items
-            }
-          ' docs/CHANGELOG.md > /tmp/changes.txt
-
       - name: Update README
         run: |
-          # Recent Changes 섹션 생성
-          CHANGES=""
-          FIRST=true
-          while IFS='|' read -r version datetime summary items; do
-            if [ "$FIRST" = true ]; then
-              BADGE="purple"
-              FIRST=false
-            else
-              BADGE="gray"
-            fi
-            ANCHOR="${version//./}"
-            CHANGES="${CHANGES}[![${version}](https://img.shields.io/badge/${version}-${BADGE})](./docs/CHANGELOG.md#${ANCHOR}) \`${datetime}\`\n"
-            while IFS= read -r item; do
-              [ -n "$item" ] && CHANGES="${CHANGES}${item}\n"
-            done <<< "$items"
-            CHANGES="${CHANGES}\n"
-          done < /tmp/changes.txt
+          python3 << 'EOF'
+          import re
 
-          # README 업데이트
-          awk -v changes="$CHANGES" '
-            /^## Recent Changes/ { print; print ""; printf changes; skip=1; next }
-            skip && /^## / && !/^## Recent Changes/ { skip=0 }
-            skip && /^\[전체 변경 내역/ { skip=0 }
-            !skip { print }
-          ' README.md > README.tmp && mv README.tmp README.md
+          # CHANGELOG 읽기
+          with open('docs/CHANGELOG.md', 'r') as f:
+              changelog = f.read()
+
+          # 버전 블록 파싱
+          pattern = r'## (v\d+\.\d+\.\d+)\n`(\d{4}\.\d{2}\.\d{2} \d{2}:\d{2})`\n\n[^\n]+\n\n((?:- [^\n]+\n)+)'
+          matches = re.findall(pattern, changelog)
+
+          # 최근 3개만
+          recent = matches[:3]
+
+          # README용 콘텐츠 생성
+          content = ""
+          for i, (version, datetime, items) in enumerate(recent):
+              badge = "purple" if i == 0 else "gray"
+              anchor = version.replace(".", "")
+              content += f"[![{version}](https://img.shields.io/badge/{version}-{badge})](./docs/CHANGELOG.md#{anchor}) `{datetime}`\n"
+              content += items + "\n"
+
+          # README 읽기
+          with open('README.md', 'r') as f:
+              readme = f.read()
+
+          # Recent Changes 섹션 교체
+          pattern = r'(## Recent Changes\n\n).*?(\n\[전체 변경 내역)'
+          replacement = r'\1' + content + r'\2'
+          new_readme = re.sub(pattern, replacement, readme, flags=re.DOTALL)
+
+          # README 쓰기
+          with open('README.md', 'w') as f:
+              f.write(new_readme)
+
+          print("README updated successfully")
+          EOF
 
       - name: Commit changes
         run: |
