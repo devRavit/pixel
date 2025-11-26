@@ -2,12 +2,21 @@
 
 stash 프로젝트의 프론트엔드 애플리케이션
 
+## Recent Changes
+
+| Version | Date | Description |
+|:-------:|:----:|:------------|
+| ![v0.0.2](https://img.shields.io/badge/v0.0.2-purple) | 2025-11-27 | Next.js 15 마이그레이션 |
+| ![v0.0.1](https://img.shields.io/badge/v0.0.1-gray) | 2025-11-26 | React 19 + Vite 7 프로젝트 생성 |
+
+> 전체 변경 내역은 [CHANGELOG](./docs/CHANGELOG.md)를 참조하세요.
+
 ## Tech Stack
 
-- **Framework**: React 19
-- **Build Tool**: Vite 7
+- **Framework**: Next.js 15
 - **Language**: TypeScript 5.9
 - **Node.js**: 25.x
+- **Deploy**: Vercel
 
 ## Getting Started
 
@@ -33,28 +42,27 @@ npm run dev
 npm run build
 ```
 
-### Preview
+### Start
 
 ```bash
-npm run preview
+npm run start
 ```
 
 ## Project Structure
 
 ```
-src/
-├── assets/          # 정적 파일
-├── components/      # 컴포넌트
-├── App.tsx          # 메인 앱
-└── main.tsx         # 진입점
+app/
+├── layout.tsx       # 루트 레이아웃
+├── page.tsx         # 메인 페이지
+└── ...
 ```
+
+## Environment Variables
+
+| Name | Description |
+|------|-------------|
+| `NEXT_PUBLIC_STASH_API_URL` | Stash API URL |
 
 ## Related Projects
 
 - [stash](https://github.com/devRavit/stash) - 백엔드 API 서비스
-
-## Recent Changes
-
-[![Latest](https://img.shields.io/badge/Latest-v0.0.1-purple)](./docs/CHANGELOG.md)
-
-> 프로젝트 초기 설정
