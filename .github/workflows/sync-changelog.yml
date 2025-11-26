@@ -1,0 +1,76 @@
+name: Sync Changelog to README
+
+on:
+  push:
+    paths:
+      - 'docs/CHANGELOG.md'
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract recent changes
+        id: changelog
+        run: |
+          # 최근 3개 버전 추출
+          awk '
+            /^## v[0-9]+\.[0-9]+\.[0-9]+/ {
+              if (count >= 3) exit
+              count++
+              version = $2
+              getline; gsub(/`/, "", $0); datetime = $0
+              getline; summary = $0
+              items = ""
+              while (getline > 0) {
+                if (/^---$/ || /^## v/) break
+                if (/^- /) items = items $0 "\n"
+              }
+              print version "|" datetime "|" summary "|" items
+            }
+          ' docs/CHANGELOG.md > /tmp/changes.txt
+
+      - name: Update README
+        run: |
+          # Recent Changes 섹션 생성
+          CHANGES=""
+          FIRST=true
+          while IFS='|' read -r version datetime summary items; do
+            if [ "$FIRST" = true ]; then
+              BADGE="purple"
+              FIRST=false
+            else
+              BADGE="gray"
+            fi
+            ANCHOR="${version//./}"
+            CHANGES="${CHANGES}[![${version}](https://img.shields.io/badge/${version}-${BADGE})](./docs/CHANGELOG.md#${ANCHOR}) \`${datetime}\`\n"
+            while IFS= read -r item; do
+              [ -n "$item" ] && CHANGES="${CHANGES}${item}\n"
+            done <<< "$items"
+            CHANGES="${CHANGES}\n"
+          done < /tmp/changes.txt
+
+          # README 업데이트
+          awk -v changes="$CHANGES" '
+            /^## Recent Changes/ { print; print ""; printf changes; skip=1; next }
+            skip && /^## / && !/^## Recent Changes/ { skip=0 }
+            skip && /^\[전체 변경 내역/ { skip=0 }
+            !skip { print }
+          ' README.md > README.tmp && mv README.tmp README.md
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git diff --staged --quiet || git commit -m "docs: README changelog 자동 동기화"
+          git push
