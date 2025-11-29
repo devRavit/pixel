@@ -1,3 +1,33 @@
+export type HealthStatusType = 'UP' | 'DEGRADED' | 'DOWN'
+export type DependencyType = 'MONGODB' | 'JIRA' | 'SLACK'
+export type MongoNodeStateType = 'PRIMARY' | 'SECONDARY' | 'ARBITER' | 'UNKNOWN'
+
+export interface MongoNodeHealth {
+  state: MongoNodeStateType
+  healthy: boolean
+}
+
+export interface MongoReplicaSetDetails {
+  nodes: MongoNodeHealth[]
+}
+
+export interface MongoDBDetails {
+  replicaSet: MongoReplicaSetDetails | null
+}
+
+export interface DependencyHealth {
+  type: DependencyType
+  status: HealthStatusType
+  details?: MongoDBDetails
+}
+
+export interface StashHealthResponse {
+  service: string
+  version: string
+  status: HealthStatusType
+  dependencies: DependencyHealth[]
+}
+
 export interface ServiceHealth {
   name: string
   status: 'UP' | 'DOWN' | 'UNKNOWN'
@@ -5,13 +35,7 @@ export interface ServiceHealth {
   responseTime?: number
   url?: string
   error?: string
-}
-
-export interface HealthResponse {
-  status: string
-  service?: string
-  version?: string
-  [key: string]: unknown
+  dependencies?: DependencyHealth[]
 }
 
 export async function checkStashHealth(): Promise<ServiceHealth> {
@@ -28,7 +52,7 @@ export async function checkStashHealth(): Promise<ServiceHealth> {
 
   try {
     const res = await fetch(`${url}/internal/status`, {
-      next: { revalidate: 300 }, // ISR: 5분마다 갱신
+      next: { revalidate: 300 },
       signal: AbortSignal.timeout(5000),
     })
 
@@ -44,7 +68,7 @@ export async function checkStashHealth(): Promise<ServiceHealth> {
       }
     }
 
-    const data: HealthResponse = await res.json()
+    const data: StashHealthResponse = await res.json()
 
     return {
       name: data.service || 'Stash API',
@@ -52,6 +76,7 @@ export async function checkStashHealth(): Promise<ServiceHealth> {
       version: data.version,
       responseTime,
       url,
+      dependencies: data.dependencies,
     }
   } catch (error) {
     return {

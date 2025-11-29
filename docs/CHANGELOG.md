@@ -4,6 +4,19 @@
 
 <!-- CHANGELOG_START -->
 
+## v0.0.4
+`2025.11.30 04:00`
+
+Status 페이지 Health Check UI 개선
+
+- DEGRADED 상태 UI 추가 (노란색 배지)
+- MongoDB 노드 상태 표시 (PRIMARY/SECONDARY/ARBITER)
+- `DependencyCard` 컴포넌트로 dependency 상태 표시
+- 노드 상태 3열 그리드 레이아웃, PRIMARY 우선 정렬
+- Health response 타입 정의 개선 (`StashHealthResponse`, `DependencyHealth`)
+
+---
+
 ## v0.0.3
 `2025.11.30 01:00`
 
