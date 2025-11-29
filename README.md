@@ -4,7 +4,14 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.3](https://img.shields.io/badge/v0.0.3-purple)](./docs/CHANGELOG.md#v003) `2025.11.30 01:00`
+[![v0.0.4](https://img.shields.io/badge/v0.0.4-purple)](./docs/CHANGELOG.md#v004) `2025.11.30 04:00`
+- DEGRADED 상태 UI 추가 (노란색 배지)
+- MongoDB 노드 상태 표시 (PRIMARY/SECONDARY/ARBITER)
+- `DependencyCard` 컴포넌트로 dependency 상태 표시
+- 노드 상태 3열 그리드 레이아웃, PRIMARY 우선 정렬
+- Health response 타입 정의 개선 (`StashHealthResponse`, `DependencyHealth`)
+
+[![v0.0.3](https://img.shields.io/badge/v0.0.3-gray)](./docs/CHANGELOG.md#v003) `2025.11.30 01:00`
 - `/status` 페이지 추가 (GitHub Status 스타일 UI)
 - `StatusBar` 컴포넌트 추가 (이슈 발생 시에만 상단에 노출)
 - `/api/health` 엔드포인트 추가
@@ -15,11 +22,6 @@ stash 프로젝트의 프론트엔드 애플리케이션
 - Next.js 15 App Router 구조로 전환
 - SSR 기반 Health Check API 호출 구현
 - ESLint flat config (TypeScript) 적용
-
-[![v0.0.1](https://img.shields.io/badge/v0.0.1-gray)](./docs/CHANGELOG.md#v001) `2025.11.26 22:00`
-- Vite + React + TypeScript 템플릿 기반 생성
-- Node.js 25.x 환경 설정
-- README.md, CHANGELOG.md 작성
 
 
 [전체 변경 내역 →](./docs/CHANGELOG.md)
