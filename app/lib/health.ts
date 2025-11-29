@@ -49,7 +49,7 @@ export async function checkStashHealth(): Promise<ServiceHealth> {
   }
 
   try {
-    const res = await fetch(`${url}/health`, {
+    const res = await fetch(`${url}/internal/status`, {
       cache: 'no-store',
       signal: AbortSignal.timeout(5000),
     })
