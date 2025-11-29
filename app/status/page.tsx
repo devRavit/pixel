@@ -1,7 +1,8 @@
-import { checkStashHealth, getOverallStatus, getPixelVersion, getLastUpdatedTimestamp, ServiceHealth } from '@/app/lib/health'
+import { checkStashHealth, getOverallStatus, getPixelVersion, ServiceHealth } from '@/app/lib/health'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
+// ISR: 5분마다 서버에서 자동 갱신
+export const revalidate = 300
 
 export const metadata = {
   title: 'Status - Pixel',
@@ -92,18 +93,16 @@ export default async function StatusPage() {
   const overall = getOverallStatus([stashHealth])
   const overallStyle = overallStyles[overall]
 
-  const cacheTimestamp = getLastUpdatedTimestamp()
-  const lastUpdated = cacheTimestamp
-    ? new Date(cacheTimestamp).toLocaleString('ko-KR', {
-        timeZone: 'Asia/Seoul',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
-    : 'Just now'
+  // ISR이 페이지 생성 시점을 기록
+  const lastUpdated = new Date().toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
 
   return (
     <main className="min-h-screen bg-slate-50">
