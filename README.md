@@ -4,11 +4,11 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.3](https://img.shields.io/badge/v0.0.3-purple)](./docs/CHANGELOG.md#v003) `2025.11.29 22:00`
+[![v0.0.3](https://img.shields.io/badge/v0.0.3-purple)](./docs/CHANGELOG.md#v003) `2025.11.30 01:00`
 - `/status` 페이지 추가 (GitHub Status 스타일 UI)
 - `StatusBar` 컴포넌트 추가 (이슈 발생 시에만 상단에 노출)
 - `/api/health` 엔드포인트 추가
-- 서버 사이드 캐싱 구현 (정상 10분, 이슈 5분)
+- ISR(Incremental Static Regeneration) 적용 - 5분마다 서버 자동 갱신
 - Stash API `/internal/status` 엔드포인트 연동
 
 [![v0.0.2](https://img.shields.io/badge/v0.0.2-gray)](./docs/CHANGELOG.md#v002) `2025.11.27 01:00`
