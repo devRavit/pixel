@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { checkStashHealth, getOverallStatus, getPixelVersion } from '@/app/lib/health'
 
-export const dynamic = 'force-dynamic'
+// ISR: 5분마다 서버에서 자동 갱신
+export const revalidate = 300
 
 export async function GET() {
   const stashHealth = await checkStashHealth()

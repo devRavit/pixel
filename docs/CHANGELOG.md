@@ -5,14 +5,14 @@
 <!-- CHANGELOG_START -->
 
 ## v0.0.3
-`2025.11.29 22:00`
+`2025.11.30 01:00`
 
 Status 페이지 및 Health Check 모니터링 기능 추가
 
 - `/status` 페이지 추가 (GitHub Status 스타일 UI)
 - `StatusBar` 컴포넌트 추가 (이슈 발생 시에만 상단에 노출)
 - `/api/health` 엔드포인트 추가
-- 서버 사이드 캐싱 구현 (정상 10분, 이슈 5분)
+- ISR(Incremental Static Regeneration) 적용 - 5분마다 서버 자동 갱신
 - Stash API `/internal/status` 엔드포인트 연동
 
 ---

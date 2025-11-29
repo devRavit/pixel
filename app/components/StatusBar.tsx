@@ -1,13 +1,6 @@
-'use client'
-
-import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 
-type OverallStatus = 'operational' | 'degraded' | 'outage' | 'loading'
-
-// polling 주기: 정상이면 10분, 이슈 있으면 5분
-const POLL_INTERVAL_HEALTHY = 10 * 60 * 1000 // 10분
-const POLL_INTERVAL_UNHEALTHY = 5 * 60 * 1000 // 5분
+type OverallStatus = 'operational' | 'degraded' | 'outage'
 
 const statusConfig = {
   operational: {
@@ -28,58 +21,15 @@ const statusConfig = {
     bgLight: 'bg-red-50',
     label: 'Major System Outage',
   },
-  loading: {
-    bg: 'bg-slate-400',
-    text: 'text-slate-600',
-    bgLight: 'bg-slate-50',
-    label: 'Checking Status...',
-  },
 }
 
 interface StatusBarProps {
-  initialStatus?: OverallStatus
+  status: OverallStatus
 }
 
-export default function StatusBar({ initialStatus = 'loading' }: StatusBarProps) {
-  const [status, setStatus] = useState<OverallStatus>(initialStatus)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
-
-  useEffect(() => {
-    async function checkStatus() {
-      try {
-        const res = await fetch('/api/health', { cache: 'no-store' })
-        if (!res.ok) throw new Error('Failed to fetch')
-        const data = await res.json()
-        const newStatus = data.overall as OverallStatus
-        setStatus(newStatus)
-
-        // 상태에 따라 다음 polling 주기 설정
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current)
-        }
-        const nextInterval = newStatus === 'operational' ? POLL_INTERVAL_HEALTHY : POLL_INTERVAL_UNHEALTHY
-        intervalRef.current = setInterval(checkStatus, nextInterval)
-      } catch {
-        setStatus('degraded')
-        // 에러 시 5분 주기로 재시도
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current)
-        }
-        intervalRef.current = setInterval(checkStatus, POLL_INTERVAL_UNHEALTHY)
-      }
-    }
-
-    checkStatus()
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [])
-
-  // 정상이거나 로딩 중이면 숨김
-  if (status === 'operational' || status === 'loading') {
+export default function StatusBar({ status }: StatusBarProps) {
+  // 정상이면 숨김
+  if (status === 'operational') {
     return null
   }
 
