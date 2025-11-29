@@ -170,7 +170,7 @@ export default async function StatusPage() {
             <h3 className="font-medium text-red-800">Error Details</h3>
             <p className="mt-1 text-sm text-red-700">{stashHealth.error}</p>
             {stashHealth.url && (
-              <p className="mt-1 text-xs text-red-500">Endpoint: {stashHealth.url}/health</p>
+              <p className="mt-1 text-xs text-red-500">Endpoint: {stashHealth.url}/internal/status</p>
             )}
           </div>
         )}
