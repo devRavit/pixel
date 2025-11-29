@@ -1,7 +1,6 @@
-import { checkStashHealth, getOverallStatus, getPixelVersion, ServiceHealth } from '@/app/lib/health'
+import { checkStashHealth, getOverallStatus, DependencyHealth, MongoNodeHealth, ServiceHealth } from '@/app/lib/health'
 import Link from 'next/link'
 
-// ISR: 5분마다 서버에서 자동 갱신
 export const revalidate = 300
 
 export const metadata = {
@@ -15,6 +14,12 @@ const statusStyles = {
     text: 'text-green-700',
     bgLight: 'bg-green-50',
     label: 'Operational',
+  },
+  DEGRADED: {
+    bg: 'bg-yellow-500',
+    text: 'text-yellow-700',
+    bgLight: 'bg-yellow-50',
+    label: 'Degraded',
   },
   DOWN: {
     bg: 'bg-red-500',
@@ -54,6 +59,52 @@ const overallStyles = {
   },
 }
 
+const nodeStateStyles = {
+  PRIMARY: { bg: 'bg-green-500', text: 'text-green-700' },
+  SECONDARY: { bg: 'bg-blue-500', text: 'text-blue-700' },
+  ARBITER: { bg: 'bg-purple-500', text: 'text-purple-700' },
+  UNKNOWN: { bg: 'bg-gray-500', text: 'text-gray-700' },
+}
+
+function MongoNodeCard({ node }: { node: MongoNodeHealth }) {
+  const stateStyle = nodeStateStyles[node.state]
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-md bg-slate-50 px-3 py-2">
+      <span className={`h-2 w-2 rounded-full ${node.healthy ? 'bg-green-500' : 'bg-red-500'}`} />
+      <span className={`text-xs font-medium ${stateStyle.text}`}>{node.state}</span>
+    </div>
+  )
+}
+
+function DependencyCard({ dependency }: { dependency: DependencyHealth }) {
+  const style = statusStyles[dependency.status]
+  const mongoDetails = dependency.type === 'MONGODB' ? dependency.details : null
+
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className={`h-2.5 w-2.5 rounded-full ${style.bg}`} />
+          <span className="font-medium text-slate-900">{dependency.type}</span>
+        </div>
+        <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>
+      </div>
+      {mongoDetails?.replicaSet && (
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {[...mongoDetails.replicaSet.nodes]
+            .sort((a, b) => {
+              const order = { PRIMARY: 0, SECONDARY: 1, ARBITER: 2, UNKNOWN: 3 }
+              return order[a.state] - order[b.state]
+            })
+            .map((node, index) => (
+              <MongoNodeCard key={index} node={node} />
+            ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface ServiceCardProps {
   service: ServiceHealth
   techStack?: string
@@ -63,37 +114,48 @@ function ServiceCard({ service, techStack }: ServiceCardProps) {
   const style = statusStyles[service.status]
 
   return (
-    <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4">
-      <div className="flex items-center gap-3">
-        <span className={`h-3 w-3 rounded-full ${style.bg}`} />
-        <div>
-          <h3 className="font-medium text-slate-900">{service.name}</h3>
-          <div className="flex items-center gap-2 text-sm text-slate-500">
-            {service.version && <span>v{service.version}</span>}
-            {techStack && <span className="text-slate-400">({techStack})</span>}
+    <div className="rounded-lg border border-slate-200 bg-white p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className={`h-3 w-3 rounded-full ${style.bg}`} />
+          <div>
+            <h3 className="font-medium text-slate-900">{service.name}</h3>
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              {service.version && <span>v{service.version}</span>}
+              {techStack && <span className="text-slate-400">({techStack})</span>}
+            </div>
           </div>
         </div>
+        <div className="text-right">
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style.bgLight} ${style.text}`}>
+            {style.label}
+          </span>
+          {service.responseTime !== undefined && (
+            <p className="mt-1 text-xs text-slate-400">{service.responseTime}ms</p>
+          )}
+        </div>
       </div>
-      <div className="text-right">
-        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style.bgLight} ${style.text}`}>
-          {style.label}
-        </span>
-        {service.responseTime !== undefined && (
-          <p className="mt-1 text-xs text-slate-400">{service.responseTime}ms</p>
-        )}
-      </div>
+
+      {service.dependencies && service.dependencies.length > 0 && (
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <h4 className="mb-3 text-sm font-medium text-slate-600">Dependencies</h4>
+          <div className="space-y-3">
+            {service.dependencies.map((dep) => (
+              <DependencyCard key={dep.type} dependency={dep} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
 export default async function StatusPage() {
   const stashHealth = await checkStashHealth()
-  const pixelVersion = getPixelVersion()
 
   const overall = getOverallStatus([stashHealth])
   const overallStyle = overallStyles[overall]
 
-  // ISR이 페이지 생성 시점을 기록
   const lastUpdated = new Date().toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
@@ -149,14 +211,6 @@ export default async function StatusPage() {
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         <h2 className="mb-4 text-lg font-semibold text-slate-900">Services</h2>
         <div className="space-y-3">
-          <ServiceCard
-            service={{
-              name: 'Pixel (Frontend)',
-              status: 'UP',
-              version: pixelVersion,
-            }}
-            techStack="Next.js 15, React 19"
-          />
           <ServiceCard
             service={stashHealth}
             techStack="Spring Boot 4, Kotlin"

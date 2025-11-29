@@ -1,7 +1,7 @@
 async function getHealth() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_STASH_API_URL}/health`,
+      `${process.env.NEXT_PUBLIC_STASH_API_URL}/internal/status`,
       { cache: 'no-store' }
     )
     if (!res.ok) throw new Error('API error')
@@ -137,7 +137,7 @@ export default async function Home() {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-slate-500">API Response</h3>
               <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-mono text-slate-600">
-                GET /health
+                GET /internal/status
               </span>
             </div>
             <pre className="mt-4 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100">
