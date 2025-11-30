@@ -344,38 +344,38 @@ export default function Home() {
     if (phase === 'typing-whoami') {
       const cmd = 'whoami'
       if (typedText.length < cmd.length) {
-        const timer = setTimeout(() => setTypedText(cmd.slice(0, typedText.length + 1)), 80)
+        const timer = setTimeout(() => setTypedText(cmd.slice(0, typedText.length + 1)), 35)
         return () => clearTimeout(timer)
       } else {
         const timer = setTimeout(() => {
           setPhase('show-whoami')
           setTypedText('')
-        }, 300)
+        }, 80)
         return () => clearTimeout(timer)
       }
     }
 
     if (phase === 'show-whoami') {
-      const timer = setTimeout(() => setPhase('typing-cat'), 600)
+      const timer = setTimeout(() => setPhase('typing-cat'), 150)
       return () => clearTimeout(timer)
     }
 
     if (phase === 'typing-cat') {
       const cmd = 'cat about.json'
       if (typedText.length < cmd.length) {
-        const timer = setTimeout(() => setTypedText(cmd.slice(0, typedText.length + 1)), 60)
+        const timer = setTimeout(() => setTypedText(cmd.slice(0, typedText.length + 1)), 25)
         return () => clearTimeout(timer)
       } else {
         const timer = setTimeout(() => {
           setPhase('show-json')
           setTypedText('')
-        }, 300)
+        }, 80)
         return () => clearTimeout(timer)
       }
     }
 
     if (phase === 'show-json') {
-      const timer = setTimeout(() => setPhase('done'), 200)
+      const timer = setTimeout(() => setPhase('done'), 50)
       return () => clearTimeout(timer)
     }
   }, [phase, typedText])
