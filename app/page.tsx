@@ -492,7 +492,7 @@ export default function Home() {
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
                             className="bg-transparent outline-none caret-[#c9d1d9] placeholder:text-[#484f58]"
-                            style={{ width: inputValue ? `${inputValue.length}ch` : '22ch' }}
+                            style={{ width: inputValue ? `${[...inputValue].reduce((w, c) => w + (c.charCodeAt(0) > 127 ? 2 : 1), 0)}ch` : '22ch' }}
                             spellCheck={false}
                             autoComplete="off"
                             placeholder="type 'help' for commands"
