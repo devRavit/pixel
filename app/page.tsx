@@ -166,7 +166,7 @@ export default function Home() {
         terminalRef.current.scrollTop = terminalRef.current.scrollHeight
       }
     })
-  }, [phase, typedText, history])
+  }, [phase, typedText, history, inputValue])
 
   // Focus input when done or loading finished
   useEffect(() => {
@@ -185,45 +185,50 @@ export default function Home() {
     }
   }
 
-  const renderStatusOutput = (data: { stash?: { name: string; version: string; status: string; responseTime: number; dependencies?: { type: string; status: string; details?: { replicaSet?: { nodes: { state: string; healthy: boolean }[] } } }[] } }) => {
-    if (!data?.stash) {
+  const renderStatusOutput = (data: { services?: { name: string; version: string; status: string; responseTime: number; dependencies?: { type: string; status: string; details?: { replicaSet?: { nodes: { state: string; healthy: boolean }[] } } }[] }[] }) => {
+    if (!data?.services?.length) {
       return <div className="text-[#f85149]">Failed to fetch status</div>
     }
 
-    const s = data.stash
-    const statusColor = s.status === 'UP' ? '#3fb950' : '#f85149'
-    const mongoDep = s.dependencies?.find(d => d.type === 'MONGODB')
-    const nodes = mongoDep?.details?.replicaSet?.nodes || []
-    const sortedNodes = [...nodes].sort((a, b) => {
-      const order: Record<string, number> = { PRIMARY: 0, SECONDARY: 1, ARBITER: 2, UNKNOWN: 3 }
-      return (order[a.state] || 3) - (order[b.state] || 3)
-    })
-
     return (
       <div>
-        <div>
-          <span style={{ color: statusColor }}>●</span>
-          <span className="text-[#c9d1d9]"> {s.name}</span>
-          <span className="text-[#8b949e]"> v{s.version}</span>
-          <span style={{ color: statusColor }}> [{s.status}]</span>
-          <span className="text-[#8b949e]"> {s.responseTime}ms</span>
-        </div>
-        {mongoDep && (
-          <div className="ml-4">
-            <span className="text-[#8b949e]">└── </span>
-            <span style={{ color: mongoDep.status === 'UP' ? '#3fb950' : '#f85149' }}>●</span>
-            <span className="text-[#8b949e]"> mongodb</span>
-            <span style={{ color: mongoDep.status === 'UP' ? '#3fb950' : '#f85149' }}> [{mongoDep.status}]</span>
-          </div>
-        )}
-        {sortedNodes.map((node, i) => {
-          const nodeColor = node.healthy ? '#3fb950' : '#f85149'
-          const stateColor: Record<string, string> = { PRIMARY: '#3fb950', SECONDARY: '#58a6ff', ARBITER: '#8b949e' }
+        {data.services.map((s, idx) => {
+          const statusColor = s.status === 'UP' ? '#3fb950' : '#f85149'
+          const mongoDep = s.dependencies?.find(d => d.type === 'MONGODB')
+          const nodes = mongoDep?.details?.replicaSet?.nodes || []
+          const sortedNodes = [...nodes].sort((a, b) => {
+            const order: Record<string, number> = { PRIMARY: 0, SECONDARY: 1, ARBITER: 2, UNKNOWN: 3 }
+            return (order[a.state] || 3) - (order[b.state] || 3)
+          })
+
           return (
-            <div key={i} className="ml-8">
-              <span className="text-[#8b949e]">{i === sortedNodes.length - 1 ? '└── ' : '├── '}</span>
-              <span style={{ color: nodeColor }}>●</span>
-              <span style={{ color: stateColor[node.state] || '#d29922' }}> {node.state}</span>
+            <div key={idx} className={idx > 0 ? 'mt-2' : ''}>
+              <div>
+                <span style={{ color: statusColor }}>●</span>
+                <span className="text-[#c9d1d9]"> {s.name}</span>
+                <span className="text-[#8b949e]"> v{s.version}</span>
+                <span style={{ color: statusColor }}> [{s.status}]</span>
+                <span className="text-[#8b949e]"> {s.responseTime}ms</span>
+              </div>
+              {mongoDep && (
+                <div className="ml-4">
+                  <span className="text-[#8b949e]">└── </span>
+                  <span style={{ color: mongoDep.status === 'UP' ? '#3fb950' : '#f85149' }}>●</span>
+                  <span className="text-[#8b949e]"> mongodb</span>
+                  <span style={{ color: mongoDep.status === 'UP' ? '#3fb950' : '#f85149' }}> [{mongoDep.status}]</span>
+                </div>
+              )}
+              {sortedNodes.map((node, i) => {
+                const nodeColor = node.healthy ? '#3fb950' : '#f85149'
+                const stateColor: Record<string, string> = { PRIMARY: '#3fb950', SECONDARY: '#58a6ff', ARBITER: '#8b949e' }
+                return (
+                  <div key={i} className="ml-8">
+                    <span className="text-[#8b949e]">{i === sortedNodes.length - 1 ? '└── ' : '├── '}</span>
+                    <span style={{ color: nodeColor }}>●</span>
+                    <span style={{ color: stateColor[node.state] || '#d29922' }}> {node.state}</span>
+                  </div>
+                )
+              })}
             </div>
           )
         })}
@@ -272,12 +277,45 @@ export default function Home() {
     setInputValue('')
   }
 
+  const commandNames = Object.keys(COMMANDS)
+  const [hintIndex, setHintIndex] = useState(0)
+
+  // 입력값 변경 시 hintIndex 리셋
+  useEffect(() => {
+    setHintIndex(0)
+  }, [inputValue])
+
+  const getHints = (input: string): string[] => {
+    if (!input) return []
+    const lower = input.toLowerCase()
+    const matches = commandNames.filter(cmd => cmd.startsWith(lower) && cmd !== lower)
+    // 1글자: 매칭이 1개일 때만 힌트 표시
+    // 2글자+: 매칭되면 모두 표시
+    if (lower.length === 1 && matches.length > 1) return []
+    return matches
+  }
+
+  const hints = getHints(inputValue)
+  const hint = hints.length > 0 ? hints[hintIndex % hints.length] : null
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleCommand(inputValue)
+      if (hint) {
+        e.preventDefault()
+        setInputValue(hint)
+        setHintIndex(0)
+      } else {
+        handleCommand(inputValue)
+      }
+    } else if ((e.key === 'Tab' || e.key === 'ArrowRight') && hint) {
+      e.preventDefault()
+      setInputValue(hint)
+      setHintIndex(0)
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      if (commandHistory.length > 0) {
+      if (hints.length > 0) {
+        setHintIndex(prev => (prev - 1 + hints.length) % hints.length)
+      } else if (commandHistory.length > 0) {
         const newIndex = historyIndex === -1
           ? commandHistory.length - 1
           : Math.max(0, historyIndex - 1)
@@ -286,7 +324,9 @@ export default function Home() {
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
-      if (historyIndex !== -1) {
+      if (hints.length > 0) {
+        setHintIndex(prev => (prev + 1) % hints.length)
+      } else if (historyIndex !== -1) {
         const newIndex = historyIndex + 1
         if (newIndex >= commandHistory.length) {
           setHistoryIndex(-1)
@@ -441,20 +481,38 @@ export default function Home() {
                   ))}
                   {!isLoading && (
                     <div className="mt-2">
-                      <span className="text-[#7ee787]">~</span>
-                      <span className="text-[#8b949e]"> $ </span>
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        className="bg-transparent outline-none caret-[#c9d1d9] placeholder:text-[#484f58]"
-                        style={{ width: inputValue ? `${inputValue.length + 1}ch` : '22ch' }}
-                        spellCheck={false}
-                        autoComplete="off"
-                        placeholder="type 'help' for commands"
-                      />
+                      <div>
+                        <span className="text-[#7ee787]">~</span>
+                        <span className="text-[#8b949e]"> $ </span>
+                        <span className="relative">
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="bg-transparent outline-none caret-[#c9d1d9] placeholder:text-[#484f58]"
+                            style={{ width: inputValue ? `${inputValue.length}ch` : '22ch' }}
+                            spellCheck={false}
+                            autoComplete="off"
+                            placeholder="type 'help' for commands"
+                          />
+                          {hint && hints.length === 1 && (
+                            <span className="pointer-events-none text-[#484f58]">
+                              {hint.slice(inputValue.length)}
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                      {hints.length > 1 && (
+                        <div className="ml-6 mt-1 border-l border-[#30363d] pl-2 text-[#484f58]">
+                          {hints.map((h, i) => (
+                            <div key={h} className={i === hintIndex % hints.length ? 'text-[#c9d1d9]' : ''}>
+                              {h}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
