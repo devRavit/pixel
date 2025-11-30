@@ -4,7 +4,17 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.4](https://img.shields.io/badge/v0.0.4-purple)](./docs/CHANGELOG.md#v004) `2025.11.30 04:00`
+[![v0.0.5](https://img.shields.io/badge/v0.0.5-purple)](./docs/CHANGELOG.md#v005) `2025.11.30 14:20`
+- 터미널에서 명령어 입력 가능 (`help`, `whoami`, `status`, `open --github`, `open --work`, `clear`)
+- `status` 명령어로 시스템 상태 인라인 표시 (MongoDB 노드 포함)
+- 명령어 히스토리 저장 및 화살표 키(↑/↓)로 탐색
+- 터미널 클릭 시 입력창 자동 포커스
+- 터미널 내부 스크롤로 변경
+- 비동기 명령어 실행 시 로딩 상태 표시
+- StatusBar 컴포넌트 제거 (터미널로 통합)
+- `/status` 페이지 제거 (터미널로 통합)
+
+[![v0.0.4](https://img.shields.io/badge/v0.0.4-gray)](./docs/CHANGELOG.md#v004) `2025.11.30 04:00`
 - DEGRADED 상태 UI 추가 (노란색 배지)
 - MongoDB 노드 상태 표시 (PRIMARY/SECONDARY/ARBITER)
 - `DependencyCard` 컴포넌트로 dependency 상태 표시
@@ -17,11 +27,6 @@ stash 프로젝트의 프론트엔드 애플리케이션
 - `/api/health` 엔드포인트 추가
 - ISR(Incremental Static Regeneration) 적용 - 5분마다 서버 자동 갱신
 - Stash API `/internal/status` 엔드포인트 연동
-
-[![v0.0.2](https://img.shields.io/badge/v0.0.2-gray)](./docs/CHANGELOG.md#v002) `2025.11.27 01:00`
-- Next.js 15 App Router 구조로 전환
-- SSR 기반 Health Check API 호출 구현
-- ESLint flat config (TypeScript) 적용
 
 
 [전체 변경 내역 →](./docs/CHANGELOG.md)
