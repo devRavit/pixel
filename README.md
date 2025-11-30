@@ -4,7 +4,14 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.6](https://img.shields.io/badge/v0.0.6-purple)](./docs/CHANGELOG.md#v006) `2025.11.30 15:00`
+[![v0.0.7](https://img.shields.io/badge/v0.0.7-purple)](./docs/CHANGELOG.md#v007) `2025.11.30 16:30`
+- 404 Not Found 페이지 추가 (터미널 스타일 UI)
+- 500 Error 페이지 추가 (retry 버튼, 5초 카운트다운)
+- Global Error 페이지 추가 (root layout 에러 처리)
+- 에러 발생 시 자동 리다이렉트 (같은 도메인 = 뒤로가기, 외부 = 홈으로)
+- 터미널 한글 입력 시 너비 계산 수정
+
+[![v0.0.6](https://img.shields.io/badge/v0.0.6-gray)](./docs/CHANGELOG.md#v006) `2025.11.30 15:00`
 - Tab/→/Enter 키로 명령어 자동완성
 - 힌트 목록 세로 표시 (여러 개일 때)
 - ↑/↓ 키로 힌트 목록 탐색
