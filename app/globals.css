@@ -1,1 +1,20 @@
 @import 'tailwindcss';
+
+/* Dark terminal scrollbar */
+.scrollbar-terminal {
+  scrollbar-width: thin;
+  scrollbar-color: #30363d transparent;
+}
+.scrollbar-terminal::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-terminal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-terminal::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+.scrollbar-terminal::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
