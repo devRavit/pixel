@@ -93,12 +93,31 @@ function JsonArray({ items }: { items: string[] }) {
   )
 }
 
-type Phase = 'typing-whoami' | 'show-whoami' | 'typing-cat' | 'show-json' | 'done'
+type IntroPhase = 'typing-whoami' | 'show-whoami' | 'typing-cat' | 'show-json' | 'done'
 
 interface HistoryEntry {
   command: string
   output: React.ReactNode
+  isTyping?: boolean
 }
+
+const AboutJson = () => (
+  <pre className="mt-1 text-xs leading-relaxed sm:text-sm">
+    <code>
+      <span style={{ color: '#ffa657' }}>{'{'}</span>{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;name&quot;</span>:        <JsonValue value="RAVIT" />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;company&quot;</span>:     <JsonValue value="Nol Universe (2022.04 ~)" />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;domain&quot;</span>:      <JsonValue value="Package Tours" />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;role&quot;</span>:        <JsonValue value="Backend Developer" />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;experience&quot;</span>:  <JsonValue value="5+ years" />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;languages&quot;</span>:   <JsonArray items={['Kotlin', 'C#', 'TypeScript']} />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;frameworks&quot;</span>:  <JsonArray items={['Spring Boot', '.NET', 'Next.js']} />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;database&quot;</span>:    <JsonArray items={['MSSQL', 'MongoDB', 'MySQL']} />,{'\n'}
+      {'  '}<span style={{ color: '#7ee787' }}>&quot;tools&quot;</span>:       <JsonArray items={['Docker', 'GitHub Actions', 'Vercel']} />{'\n'}
+      <span style={{ color: '#ffa657' }}>{'}'}</span>
+    </code>
+  </pre>
+)
 
 type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS'
 
@@ -142,7 +161,7 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
 }
 
 export default function Home() {
-  const [phase, setPhase] = useState<Phase>('typing-whoami')
+  const [introPhase, setIntroPhase] = useState<IntroPhase>('typing-whoami')
   const [typedText, setTypedText] = useState('')
   const [showCursor, setShowCursor] = useState(true)
   const [inputValue, setInputValue] = useState('')
@@ -166,14 +185,14 @@ export default function Home() {
         terminalRef.current.scrollTop = terminalRef.current.scrollHeight
       }
     })
-  }, [phase, typedText, history, inputValue])
+  }, [introPhase, typedText, history, inputValue])
 
   // Focus input when done or loading finished
   useEffect(() => {
-    if (phase === 'done' && !isLoading && inputRef.current) {
+    if (introPhase === 'done' && !isLoading && inputRef.current) {
       inputRef.current.focus()
     }
-  }, [phase, isLoading])
+  }, [introPhase, isLoading])
 
   const fetchStatus = async () => {
     try {
@@ -339,46 +358,48 @@ export default function Home() {
     }
   }
 
-  // Typing animation
+  // Typing animation for intro
   useEffect(() => {
-    if (phase === 'typing-whoami') {
+    if (introPhase === 'typing-whoami') {
       const cmd = 'whoami'
       if (typedText.length < cmd.length) {
         const timer = setTimeout(() => setTypedText(cmd.slice(0, typedText.length + 1)), 35)
         return () => clearTimeout(timer)
       } else {
         const timer = setTimeout(() => {
-          setPhase('show-whoami')
+          setHistory([{ command: 'whoami', output: <div className="text-[#8b949e]">ravit</div> }])
+          setIntroPhase('show-whoami')
           setTypedText('')
         }, 80)
         return () => clearTimeout(timer)
       }
     }
 
-    if (phase === 'show-whoami') {
-      const timer = setTimeout(() => setPhase('typing-cat'), 150)
+    if (introPhase === 'show-whoami') {
+      const timer = setTimeout(() => setIntroPhase('typing-cat'), 150)
       return () => clearTimeout(timer)
     }
 
-    if (phase === 'typing-cat') {
+    if (introPhase === 'typing-cat') {
       const cmd = 'cat about.json'
       if (typedText.length < cmd.length) {
         const timer = setTimeout(() => setTypedText(cmd.slice(0, typedText.length + 1)), 25)
         return () => clearTimeout(timer)
       } else {
         const timer = setTimeout(() => {
-          setPhase('show-json')
+          setHistory(prev => [...prev, { command: 'cat about.json', output: <AboutJson /> }])
+          setIntroPhase('show-json')
           setTypedText('')
         }, 80)
         return () => clearTimeout(timer)
       }
     }
 
-    if (phase === 'show-json') {
-      const timer = setTimeout(() => setPhase('done'), 50)
+    if (introPhase === 'show-json') {
+      const timer = setTimeout(() => setIntroPhase('done'), 50)
       return () => clearTimeout(timer)
     }
-  }, [phase, typedText])
+  }, [introPhase, typedText])
 
   const cursor = showCursor ? '▋' : ' '
 
@@ -388,7 +409,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[#21262d] bg-[#161b22]/80 backdrop-blur-sm">
         <div className="flex items-center justify-between px-4 py-4">
           <span className="font-mono text-sm text-[#58a6ff]">ravit.run</span>
-          <StatusIndicator onClick={() => phase === 'done' && handleCommand('status')} />
+          <StatusIndicator onClick={() => introPhase === 'done' && handleCommand('status')} />
         </div>
       </nav>
 
@@ -407,11 +428,11 @@ export default function Home() {
           {/* Terminal Content */}
           <div
             ref={terminalRef}
-            onClick={() => phase === 'done' && inputRef.current?.focus()}
+            onClick={() => introPhase === 'done' && inputRef.current?.focus()}
             className="flex-1 cursor-text overflow-y-auto scrollbar-terminal p-4 font-mono text-xs leading-relaxed sm:p-6 sm:text-sm"
           >
-              {/* Line 1: whoami */}
-              {phase === 'typing-whoami' && (
+              {/* Typing animation for intro */}
+              {introPhase === 'typing-whoami' && (
                 <div>
                   <span className="text-[#7ee787]">~</span>
                   <span className="text-[#8b949e]"> $ </span>
@@ -420,57 +441,10 @@ export default function Home() {
                 </div>
               )}
 
-              {(phase === 'show-whoami' || phase === 'typing-cat' || phase === 'show-json' || phase === 'done') && (
-                <>
-                  <div>
-                    <span className="text-[#7ee787]">~</span>
-                    <span className="text-[#8b949e]"> $ </span>
-                    <span>whoami</span>
-                  </div>
-                  <div className="text-[#8b949e]">ravit</div>
-                </>
-              )}
-
-              {/* Line 2: cat about.json */}
-              {phase === 'typing-cat' && (
-                <div className="mt-2">
-                  <span className="text-[#7ee787]">~</span>
-                  <span className="text-[#8b949e]"> $ </span>
-                  <span>{typedText}</span>
-                  <span className="text-[#c9d1d9]">{cursor}</span>
-                </div>
-              )}
-
-              {(phase === 'show-json' || phase === 'done') && (
-                <>
-                  <div className="mt-2">
-                    <span className="text-[#7ee787]">~</span>
-                    <span className="text-[#8b949e]"> $ </span>
-                    <span>cat about.json</span>
-                  </div>
-                  <pre className="mt-1 text-xs leading-relaxed sm:text-sm">
-                    <code>
-                      <span style={{ color: '#ffa657' }}>{'{'}</span>{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;name&quot;</span>:        <JsonValue value="RAVIT" />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;company&quot;</span>:     <JsonValue value="Nol Universe (2022.04 ~)" />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;domain&quot;</span>:      <JsonValue value="Package Tours" />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;role&quot;</span>:        <JsonValue value="Backend Developer" />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;experience&quot;</span>:  <JsonValue value="5+ years" />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;languages&quot;</span>:   <JsonArray items={['Kotlin', 'C#', 'TypeScript']} />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;frameworks&quot;</span>:  <JsonArray items={['Spring Boot', '.NET', 'Next.js']} />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;database&quot;</span>:    <JsonArray items={['MSSQL', 'MongoDB', 'MySQL']} />,{'\n'}
-                      {'  '}<span style={{ color: '#7ee787' }}>&quot;tools&quot;</span>:       <JsonArray items={['Docker', 'GitHub Actions', 'Vercel']} />{'\n'}
-                      <span style={{ color: '#ffa657' }}>{'}'}</span>
-                    </code>
-                  </pre>
-                </>
-              )}
-
-              {/* Command history and interactive prompt */}
-              {phase === 'done' && (
+              {introPhase === 'typing-cat' && (
                 <>
                   {history.map((entry, i) => (
-                    <div key={i} className="mt-2">
+                    <div key={i} className={i > 0 ? 'mt-2' : ''}>
                       <div>
                         <span className="text-[#7ee787]">~</span>
                         <span className="text-[#8b949e]"> $ </span>
@@ -479,8 +453,30 @@ export default function Home() {
                       {entry.output}
                     </div>
                   ))}
-                  {!isLoading && (
-                    <div className="mt-2">
+                  <div className="mt-2">
+                    <span className="text-[#7ee787]">~</span>
+                    <span className="text-[#8b949e]"> $ </span>
+                    <span>{typedText}</span>
+                    <span className="text-[#c9d1d9]">{cursor}</span>
+                  </div>
+                </>
+              )}
+
+              {/* Command history and interactive prompt */}
+              {(introPhase === 'show-whoami' || introPhase === 'show-json' || introPhase === 'done') && (
+                <>
+                  {history.map((entry, i) => (
+                    <div key={i} className={i > 0 ? 'mt-2' : ''}>
+                      <div>
+                        <span className="text-[#7ee787]">~</span>
+                        <span className="text-[#8b949e]"> $ </span>
+                        <span>{entry.command}</span>
+                      </div>
+                      {entry.output}
+                    </div>
+                  ))}
+                  {introPhase === 'done' && !isLoading && (
+                    <div className={history.length > 0 ? 'mt-2' : ''}>
                       <div>
                         <span className="text-[#7ee787]">~</span>
                         <span className="text-[#8b949e]"> $ </span>
