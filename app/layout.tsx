@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Pixel',
-  description: 'Pixel - Frontend for Stash',
+  title: 'ravit.run',
+  description: 'RAVIT - Backend Developer',
 }
 
 export default function RootLayout({

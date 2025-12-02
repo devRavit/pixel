@@ -36,6 +36,7 @@ function StatusIndicator({ onClick }: { onClick?: () => void }) {
 
 const BRAND_COLORS: Record<string, string | [string, string]> = {
   'Nol Universe': ['#3549FF', '#5085FF'],
+  '미네르바소프트': ['#3B82F6', '#EF4444'],
   'Kotlin': '#7F52FF',
   'C#': '#68217A',
   'TypeScript': '#3178C6',
@@ -101,6 +102,239 @@ interface HistoryEntry {
   isTyping?: boolean
 }
 
+// Vim-style Resume Viewer
+function VimViewer({ onClose }: { onClose: () => void }) {
+  const contentRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Focus container on mount
+  useEffect(() => {
+    containerRef.current?.focus()
+  }, [])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // e.code는 물리적 키 위치 (한영 상관없이 동작)
+    if (e.code === 'KeyQ' || e.key === 'Escape') {
+      e.preventDefault()
+      onClose()
+    } else if ((e.code === 'KeyJ' || e.key === 'ArrowDown') && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollBy({ top: 80, behavior: 'smooth' })
+    } else if ((e.code === 'KeyK' || e.key === 'ArrowUp') && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollBy({ top: -80, behavior: 'smooth' })
+    } else if (e.code === 'KeyD' && e.ctrlKey && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollBy({ top: 300, behavior: 'smooth' })
+    } else if (e.code === 'KeyU' && e.ctrlKey && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollBy({ top: -300, behavior: 'smooth' })
+    } else if (e.code === 'KeyG' && !e.shiftKey && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (e.code === 'KeyG' && e.shiftKey && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollTo({ top: contentRef.current.scrollHeight, behavior: 'smooth' })
+    } else if (e.key === 'PageDown' && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollBy({ top: 300, behavior: 'smooth' })
+    } else if (e.key === 'PageUp' && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollBy({ top: -300, behavior: 'smooth' })
+    } else if (e.key === 'Home' && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (e.key === 'End' && contentRef.current) {
+      e.preventDefault()
+      contentRef.current.scrollTo({ top: contentRef.current.scrollHeight, behavior: 'smooth' })
+    }
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      className="absolute inset-0 z-10 flex flex-col bg-[#0d1117] font-mono text-sm outline-none"
+    >
+      {/* Vim Header */}
+      <div className="flex items-center justify-between border-b border-[#30363d] bg-[#161b22] px-4 py-2">
+        <span className="text-[#8b949e]">resume.md</span>
+        <span className="text-[#8b949e]">[readonly]</span>
+      </div>
+
+      {/* Content */}
+      <div ref={contentRef} className="flex-1 overflow-y-auto scrollbar-terminal p-4 sm:p-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-[#58a6ff]"># RAVIT</h1>
+          <p className="mt-1 text-[#8b949e]">Backend Developer · 5+ years experience</p>
+        </div>
+
+        {/* Experience */}
+        <div className="mb-6">
+          <h2 className="mb-3 text-lg font-semibold text-[#7ee787]">## Experience</h2>
+
+          {/* Nol Universe */}
+          <div className="mb-4 border-l-2 border-[#238636] pl-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className="font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #3549FF, #5085FF)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                NOL Universe
+              </span>
+              <span className="text-[#8b949e]">(구 인터파크)</span>
+              <span className="rounded bg-[#238636] px-2 py-0.5 text-xs text-white">current</span>
+            </div>
+            <div className="mt-1 text-[#8b949e]">Backend Developer · 2022.04 ~ present</div>
+            <ul className="mt-2 space-y-1 text-[#c9d1d9]">
+              <li><span className="text-[#8b949e]">-</span> 패키지 투어 서비스 백엔드 개발</li>
+              <li><span className="text-[#8b949e]">-</span> Spring Boot, Kotlin, MSSQL 기반 시스템 구축</li>
+              <li><span className="text-[#8b949e]">-</span> 예약/결제 시스템 설계 및 운영</li>
+              <li><span className="text-[#8b949e]">-</span> 레거시 .NET 시스템 유지보수</li>
+            </ul>
+          </div>
+
+          {/* Minerva Soft */}
+          <div className="mb-4 border-l-2 border-[#30363d] pl-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className="font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #3B82F6, #EF4444)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                미네르바소프트
+              </span>
+            </div>
+            <div className="mt-1 text-[#8b949e]">사원 · 2020.09 ~ 2022.03</div>
+            <ul className="mt-2 space-y-1 text-[#c9d1d9]">
+              <li><span className="text-[#8b949e]">-</span> 플랫폼 개발 및 응용 프로그램 개발</li>
+              <li><span className="text-[#8b949e]">-</span> 동의서 인식기 API Backend (Manager-Agent 병렬처리)</li>
+              <li><span className="text-[#8b949e]">-</span> 통합 모듈 플랫폼 관리 서비스 (Blazor, Socket)</li>
+              <li><span className="text-[#8b949e]">-</span> SQL 구문 분석기 개발 (Oracle, MSSQL, MySQL, PostgreSQL)</li>
+            </ul>
+          </div>
+
+          {/* KITA */}
+          <div className="mb-4 border-l-2 border-[#30363d] pl-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold text-[#c9d1d9]">한국무역협회 KITA 아카데미</span>
+            </div>
+            <div className="mt-1 text-[#8b949e]">프리랜서 · 2020.05 ~ 2020.08</div>
+            <ul className="mt-2 space-y-1 text-[#c9d1d9]">
+              <li><span className="text-[#8b949e]">-</span> LMS 관리 Web 프로그램 개발</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Skills */}
+        <div className="mb-6">
+          <h2 className="mb-3 text-lg font-semibold text-[#7ee787]">## Skills</h2>
+
+          <div className="space-y-3">
+            <div>
+              <span className="text-[#ffa657]">Languages:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <span className="rounded bg-[#7F52FF]/20 px-2 py-1 text-xs text-[#7F52FF]">Kotlin</span>
+                <span className="rounded bg-[#68217A]/20 px-2 py-1 text-xs text-[#68217A]">C#</span>
+                <span className="rounded bg-[#3178C6]/20 px-2 py-1 text-xs text-[#3178C6]">TypeScript</span>
+                <span className="rounded bg-[#b07219]/20 px-2 py-1 text-xs text-[#b07219]">Java</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-[#ffa657]">Frameworks:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <span className="rounded bg-[#6DB33F]/20 px-2 py-1 text-xs text-[#6DB33F]">Spring Boot</span>
+                <span className="rounded bg-[#512BD4]/20 px-2 py-1 text-xs text-[#512BD4]">.NET / Blazor</span>
+                <span className="rounded bg-[#ffffff]/20 px-2 py-1 text-xs text-[#ffffff]">Next.js</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-[#ffa657]">Database:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <span className="rounded bg-[#CC2927]/20 px-2 py-1 text-xs text-[#CC2927]">MSSQL</span>
+                <span className="rounded bg-[#47A248]/20 px-2 py-1 text-xs text-[#47A248]">MongoDB</span>
+                <span className="rounded bg-[#4479A1]/20 px-2 py-1 text-xs text-[#4479A1]">MySQL</span>
+                <span className="rounded bg-[#F80000]/20 px-2 py-1 text-xs text-[#F80000]">Oracle</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-[#ffa657]">DevOps:</span>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <span className="rounded bg-[#2496ED]/20 px-2 py-1 text-xs text-[#2496ED]">Docker</span>
+                <span className="rounded bg-[#2088FF]/20 px-2 py-1 text-xs text-[#2088FF]">GitHub Actions</span>
+                <span className="rounded bg-[#ffffff]/20 px-2 py-1 text-xs text-[#ffffff]">Vercel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Education */}
+        <div className="mb-6">
+          <h2 className="mb-3 text-lg font-semibold text-[#7ee787]">## Education</h2>
+          <div className="space-y-2">
+            <div className="border-l-2 border-[#30363d] pl-4">
+              <div className="font-semibold text-[#c9d1d9]">가천대학교</div>
+              <div className="text-[#8b949e]">컴퓨터공학과 졸업 · 2010.03 ~ 2020.02</div>
+            </div>
+            <div className="border-l-2 border-[#30363d] pl-4">
+              <div className="font-semibold text-[#c9d1d9]">SC IT MASTER</div>
+              <div className="text-[#8b949e]">일본 IT 전문인재 양성 부트캠프 · 2019.03 ~ 2019.12</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Certifications */}
+        <div className="mb-6">
+          <h2 className="mb-3 text-lg font-semibold text-[#7ee787]">## Certifications</h2>
+          <div className="space-y-1 text-[#c9d1d9]">
+            <div><span className="text-[#8b949e]">-</span> JLPT N1</div>
+          </div>
+        </div>
+
+        {/* Links */}
+        <div className="mb-6">
+          <h2 className="mb-3 text-lg font-semibold text-[#7ee787]">## Links</h2>
+          <div className="space-y-1 text-[#58a6ff]">
+            <div><span className="text-[#8b949e]">→</span> github.com/devRavit</div>
+            <div><span className="text-[#8b949e]">→</span> ravit.run</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Vim Footer */}
+      <div className="border-t border-[#30363d] bg-[#161b22] px-4 py-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#8b949e]">
+          <span className="hidden sm:inline">
+            <span className="text-[#ffa657]">↑↓</span> scroll
+            <span className="mx-2">·</span>
+            <span className="text-[#ffa657]">PgUp/Dn</span> page
+            <span className="mx-2">·</span>
+            <span className="text-[#ffa657]">Home/End</span> top/bottom
+            <span className="mx-2">·</span>
+            <span className="text-[#ffa657]">q</span> quit
+          </span>
+          <button onClick={onClose} className="text-[#ffa657] hover:text-[#c9d1d9] sm:hidden">
+            [tap to close]
+          </button>
+          <span>:q</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const AboutJson = () => (
   <pre className="mt-1 text-xs leading-relaxed sm:text-sm">
     <code>
@@ -119,7 +353,7 @@ const AboutJson = () => (
   </pre>
 )
 
-type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS'
+type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS' | 'OPEN_RESUME'
 
 const COMMANDS: Record<string, { description: string; action: () => CommandResult }> = {
   'help': {
@@ -130,6 +364,7 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
         <div className="ml-2 mt-1">
           <div><span className="text-[#79c0ff]">help</span>          Show this help message</div>
           <div><span className="text-[#79c0ff]">whoami</span>        Display current user</div>
+          <div><span className="text-[#79c0ff]">resume</span>        View resume (vim mode)</div>
           <div><span className="text-[#79c0ff]">status</span>        Check system status</div>
           <div><span className="text-[#79c0ff]">open --github</span> Open GitHub profile</div>
           <div><span className="text-[#79c0ff]">open --work</span>   Open work project</div>
@@ -141,6 +376,10 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
   'whoami': {
     description: 'Display current user',
     action: () => <div className="text-[#8b949e]">ravit</div>,
+  },
+  'resume': {
+    description: 'View resume',
+    action: () => 'OPEN_RESUME',
   },
   'status': {
     description: 'Check system status',
@@ -169,6 +408,7 @@ export default function Home() {
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [isLoading, setIsLoading] = useState(false)
+  const [showVim, setShowVim] = useState(false)
   const terminalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -284,6 +524,9 @@ export default function Home() {
         setIsLoading(false)
       } else if (result === 'CLEAR') {
         setHistory([])
+      } else if (result === 'OPEN_RESUME') {
+        setHistory(prev => [...prev, { command: cmd, output: <div className="text-[#8b949e]">Opening resume.md...</div> }])
+        setShowVim(true)
       } else {
         setHistory(prev => [...prev, { command: cmd, output: result }])
       }
@@ -416,7 +659,10 @@ export default function Home() {
       {/* Terminal Section */}
       <section className="flex h-screen flex-col pt-[57px]">
         {/* Terminal Window - Full screen on mobile */}
-        <div className="flex min-h-0 flex-1 flex-col bg-[#161b22] sm:m-6 sm:rounded-lg sm:border sm:border-[#30363d] sm:shadow-2xl">
+        <div className="relative flex min-h-0 flex-1 flex-col bg-[#161b22] sm:m-6 sm:rounded-lg sm:border sm:border-[#30363d] sm:shadow-2xl">
+          {/* Vim Viewer Overlay */}
+          {showVim && <VimViewer onClose={() => { setShowVim(false); inputRef.current?.focus() }} />}
+
           {/* Terminal Header */}
           <div className="flex items-center gap-2 border-b border-[#30363d] bg-[#21262d] px-3 py-2 sm:px-4 sm:py-3">
             <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] sm:h-3 sm:w-3" />
