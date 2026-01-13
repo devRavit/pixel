@@ -1,0 +1,98 @@
+{
+  "profile": {
+    "name": "RAVIT",
+    "title": "Backend Developer",
+    "yearsOfExperience": "5+",
+    "email": "devravit@gmail.com",
+    "links": {
+      "github": "github.com/devRavit",
+      "website": "ravit.run"
+    }
+  },
+
+  "career": [
+    {
+      "company": "NOL Universe",
+      "companyAlias": "구 인터파크",
+      "position": "Backend Developer",
+      "period": {
+        "startedAt": "2022.04",
+        "endedAt": null
+      },
+      "isCurrent": true,
+      "highlights": [
+        "패키지 투어 서비스 백엔드 개발",
+        "Spring Boot, Kotlin, MSSQL 기반 시스템 구축",
+        "예약/결제 시스템 설계 및 운영"
+      ]
+    },
+    {
+      "company": "미네르바소프트",
+      "companyAlias": null,
+      "position": "사원",
+      "period": {
+        "startedAt": "2020.09",
+        "endedAt": "2022.03"
+      },
+      "isCurrent": false,
+      "highlights": [
+        "플랫폼 개발 및 응용 프로그램 개발",
+        "동의서 인식기 API Backend 개발",
+        "SQL 구문 분석기 개발"
+      ]
+    },
+    {
+      "company": "한국무역협회 KITA 아카데미",
+      "companyAlias": null,
+      "position": "프리랜서",
+      "period": {
+        "startedAt": "2020.05",
+        "endedAt": "2020.08"
+      },
+      "isCurrent": false,
+      "highlights": [
+        "LMS 관리 Web 프로그램 개발"
+      ]
+    }
+  ],
+
+  "skills": {
+    "languages": ["Kotlin", "C#", "TypeScript", "Java"],
+    "frameworks": ["Spring Boot", ".NET", "Blazor", "Next.js", "React"],
+    "databases": ["MongoDB", "MSSQL", "MySQL", "Oracle", "Redis"],
+    "infrastructure": ["Docker", "AWS SQS", "Kinesis", "Kafka"],
+    "tools": ["GitHub Actions", "Vercel"]
+  },
+
+  "education": [
+    {
+      "institution": "가천대학교",
+      "major": "컴퓨터공학과",
+      "degree": "졸업",
+      "period": {
+        "startedAt": "2010.03",
+        "endedAt": "2020.02"
+      }
+    },
+    {
+      "institution": "SC IT MASTER",
+      "major": "일본 IT 전문인재 양성 부트캠프",
+      "degree": "수료",
+      "period": {
+        "startedAt": "2019.03",
+        "endedAt": "2019.12"
+      }
+    }
+  ],
+
+  "certifications": ["JLPT N1"],
+
+  "activities": [
+    {
+      "name": "10X-THON 해커톤",
+      "period": "2025.11",
+      "project": "AI 여행 기념품 생성 서비스 (Memento)",
+      "result": "74팀 중 13위 (상위 17%)"
+    }
+  ]
+}
