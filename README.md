@@ -4,7 +4,13 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.10](https://img.shields.io/badge/v0.0.10-purple)](./docs/CHANGELOG.md#v0010) `2026.01.15 00:30`
+[![v0.0.11](https://img.shields.io/badge/v0.0.11-purple)](./docs/CHANGELOG.md#v0011) `2026.01.15 01:30`
+- `portfolio` 명령어 추가 (stash API 연동)
+- lib/portfolio.ts 추가 (타입 정의 및 API 함수)
+- 회사별 프로젝트 그룹핑 및 Task 목록 표시
+- fetchProjects, fetchProjectById API 함수 구현
+
+[![v0.0.10](https://img.shields.io/badge/v0.0.10-gray)](./docs/CHANGELOG.md#v0010) `2026.01.15 00:30`
 - Health API: `/internal/status` → `/internals/status`
 - Calendar API: `/api/calendar/events` → `/externals/calendar/events`
 
@@ -12,14 +18,6 @@ stash 프로젝트의 프론트엔드 애플리케이션
 - `data/resume.json` 추가 (정적 이력서 데이터)
 - 프로필, 경력, 기술 스택, 학력, 자격증, 활동 정보 포함
 - 동적 작업 이력은 stash 백엔드(MongoDB)에서 관리
-
-[![v0.0.8](https://img.shields.io/badge/v0.0.8-gray)](./docs/CHANGELOG.md#v008) `2025.12.03 01:30`
-- `resume` 명령어 추가 (vim 스타일 이력서 뷰어)
-- VimViewer 컴포넌트 구현 (j/k, ↑/↓, PgUp/Dn, Home/End 키보드 네비게이션)
-- 한글 입력 상태에서도 단축키 동작하도록 `e.code` 사용
-- 회사명 브랜드 컬러 그라데이션 적용 (NOL Universe, 미네르바소프트)
-- 파비콘 추가 (`{/}` 코드 아이콘)
-- 메타데이터 업데이트 (title: ravit.run, description 변경)
 
 
 [전체 변경 내역 →](./docs/CHANGELOG.md)
