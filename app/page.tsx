@@ -1,6 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import {
+  Project,
+  companyDisplayName,
+  taskTypeDisplayName,
+  formatPeriod,
+} from './lib/portfolio'
 
 type OverallStatus = 'operational' | 'degraded' | 'outage' | 'loading'
 
@@ -353,7 +359,7 @@ const AboutJson = () => (
   </pre>
 )
 
-type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS' | 'OPEN_RESUME'
+type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS' | 'FETCH_PORTFOLIO' | 'OPEN_RESUME'
 
 const COMMANDS: Record<string, { description: string; action: () => CommandResult }> = {
   'help': {
@@ -365,6 +371,7 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
           <div><span className="text-[#79c0ff]">help</span>          Show this help message</div>
           <div><span className="text-[#79c0ff]">whoami</span>        Display current user</div>
           <div><span className="text-[#79c0ff]">resume</span>        View resume (vim mode)</div>
+          <div><span className="text-[#79c0ff]">portfolio</span>     View project portfolio</div>
           <div><span className="text-[#79c0ff]">status</span>        Check system status</div>
           <div><span className="text-[#79c0ff]">open --github</span> Open GitHub profile</div>
           <div><span className="text-[#79c0ff]">open --work</span>   Open work project</div>
@@ -384,6 +391,10 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
   'status': {
     description: 'Check system status',
     action: () => 'FETCH_STATUS',
+  },
+  'portfolio': {
+    description: 'View project portfolio',
+    action: () => 'FETCH_PORTFOLIO',
   },
   'open --github': {
     description: 'Open GitHub profile',
@@ -442,6 +453,81 @@ export default function Home() {
     } catch {
       return null
     }
+  }
+
+  const fetchPortfolio = async (): Promise<Project[] | null> => {
+    const url = process.env.NEXT_PUBLIC_STASH_API_URL
+    if (!url) return null
+    try {
+      const res = await fetch(`${url}/externals/projects?includeTasks=true`)
+      if (!res.ok) return null
+      return res.json()
+    } catch {
+      return null
+    }
+  }
+
+  const renderPortfolioOutput = (projects: Project[] | null) => {
+    if (!projects) {
+      return <div className="text-[#f85149]">Failed to fetch portfolio</div>
+    }
+
+    // Group by company
+    const grouped = projects.reduce((acc, project) => {
+      const company = project.company
+      if (!acc[company]) acc[company] = []
+      acc[company].push(project)
+      return acc
+    }, {} as Record<string, Project[]>)
+
+    return (
+      <div className="space-y-4">
+        {Object.entries(grouped).map(([company, companyProjects]) => (
+          <div key={company}>
+            <div className="text-[#7ee787] font-semibold">
+              ## {companyDisplayName[company as keyof typeof companyDisplayName] || company}
+            </div>
+            {companyProjects.map((project) => (
+              <div key={project.id} className="mt-2 border-l-2 border-[#30363d] pl-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[#58a6ff] font-medium">{project.name}</span>
+                  {project.period && (
+                    <span className="text-[#8b949e] text-xs">{formatPeriod(project.period)}</span>
+                  )}
+                </div>
+                <div className="text-[#8b949e] text-xs mt-1">{project.summary}</div>
+                {project.techStack.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {project.techStack.slice(0, 5).map((tech) => (
+                      <span key={tech} className="text-[10px] px-1.5 py-0.5 rounded bg-[#21262d] text-[#8b949e]">
+                        {tech}
+                      </span>
+                    ))}
+                    {project.techStack.length > 5 && (
+                      <span className="text-[10px] text-[#8b949e]">+{project.techStack.length - 5}</span>
+                    )}
+                  </div>
+                )}
+                {project.tasks && project.tasks.length > 0 && (
+                  <div className="mt-2 ml-2 space-y-1">
+                    {project.tasks.map((task) => (
+                      <div key={task.id} className="text-[#c9d1d9] text-xs">
+                        <span className="text-[#8b949e]">└─ </span>
+                        <span className="text-[#ffa657]">[{taskTypeDisplayName[task.type]}]</span>
+                        <span> {task.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+        <div className="text-[#8b949e] text-xs mt-4">
+          Total: {projects.length} projects, {projects.reduce((acc, p) => acc + (p.tasks?.length || 0), 0)} tasks
+        </div>
+      </div>
+    )
   }
 
   const renderStatusOutput = (data: { services?: { name: string; version: string; status: string; responseTime: number; dependencies?: { type: string; status: string; details?: { replicaSet?: { nodes: { state: string; healthy: boolean }[] } } }[] }[] }) => {
@@ -519,6 +605,16 @@ export default function Home() {
         setHistory(prev => {
           const newHistory = [...prev]
           newHistory[newHistory.length - 1] = { command: cmd, output: renderStatusOutput(data) }
+          return newHistory
+        })
+        setIsLoading(false)
+      } else if (result === 'FETCH_PORTFOLIO') {
+        setIsLoading(true)
+        setHistory(prev => [...prev, { command: cmd, output: <div className="text-[#8b949e]">Fetching portfolio...</div> }])
+        const projects = await fetchPortfolio()
+        setHistory(prev => {
+          const newHistory = [...prev]
+          newHistory[newHistory.length - 1] = { command: cmd, output: renderPortfolioOutput(projects) }
           return newHistory
         })
         setIsLoading(false)
