@@ -4,6 +4,18 @@
 
 <!-- CHANGELOG_START -->
 
+## v0.0.11
+`2026.01.15 01:30`
+
+Portfolio 터미널 명령어 추가
+
+- `portfolio` 명령어 추가 (stash API 연동)
+- lib/portfolio.ts 추가 (타입 정의 및 API 함수)
+- 회사별 프로젝트 그룹핑 및 Task 목록 표시
+- fetchProjects, fetchProjectById API 함수 구현
+
+---
+
 ## v0.0.10
 `2026.01.15 00:30`
 
