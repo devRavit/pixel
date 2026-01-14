@@ -4,6 +4,16 @@
 
 <!-- CHANGELOG_START -->
 
+## v0.0.10
+`2026.01.15 00:30`
+
+Stash API endpoint path 업데이트
+
+- Health API: `/internal/status` → `/internals/status`
+- Calendar API: `/api/calendar/events` → `/externals/calendar/events`
+
+---
+
 ## v0.0.9
 `2026.01.14 17:30`
 
