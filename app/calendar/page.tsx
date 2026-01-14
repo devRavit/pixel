@@ -110,7 +110,7 @@ export default function CalendarPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_STASH_API_URL
-      const response = await fetch(`${apiUrl}/api/calendar/events`, {
+      const response = await fetch(`${apiUrl}/externals/calendar/events`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,

@@ -51,7 +51,7 @@ export async function checkStashHealth(): Promise<ServiceHealth> {
   }
 
   try {
-    const res = await fetch(`${url}/internal/status`, {
+    const res = await fetch(`${url}/internals/status`, {
       next: { revalidate: 300 },
       signal: AbortSignal.timeout(5000),
     })
