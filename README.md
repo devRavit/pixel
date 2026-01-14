@@ -4,7 +4,12 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.8](https://img.shields.io/badge/v0.0.8-purple)](./docs/CHANGELOG.md#v008) `2025.12.03 01:30`
+[![v0.0.9](https://img.shields.io/badge/v0.0.9-purple)](./docs/CHANGELOG.md#v009) `2026.01.14 17:30`
+- `data/resume.json` 추가 (정적 이력서 데이터)
+- 프로필, 경력, 기술 스택, 학력, 자격증, 활동 정보 포함
+- 동적 작업 이력은 stash 백엔드(MongoDB)에서 관리
+
+[![v0.0.8](https://img.shields.io/badge/v0.0.8-gray)](./docs/CHANGELOG.md#v008) `2025.12.03 01:30`
 - `resume` 명령어 추가 (vim 스타일 이력서 뷰어)
 - VimViewer 컴포넌트 구현 (j/k, ↑/↓, PgUp/Dn, Home/End 키보드 네비게이션)
 - 한글 입력 상태에서도 단축키 동작하도록 `e.code` 사용
@@ -18,14 +23,6 @@ stash 프로젝트의 프론트엔드 애플리케이션
 - Global Error 페이지 추가 (root layout 에러 처리)
 - 에러 발생 시 자동 리다이렉트 (같은 도메인이면 뒤로가기, 아니면 홈으로)
 - 터미널 한글 입력 시 너비 계산 수정 (charCode > 127 = 2ch)
-
-[![v0.0.6](https://img.shields.io/badge/v0.0.6-gray)](./docs/CHANGELOG.md#v006) `2025.11.30 15:00`
-- Tab/→/Enter 키로 명령어 자동완성
-- 힌트 목록 세로 표시 (여러 개일 때)
-- ↑/↓ 키로 힌트 목록 탐색
-- 1글자: 단일 매칭만 힌트 표시, 2글자+: 모든 매칭 표시
-- status 명령어 API 파싱 수정 (`services` 배열 순회)
-- 힌트 표시 시 터미널 자동 스크롤
 
 
 [전체 변경 내역 →](./docs/CHANGELOG.md)
