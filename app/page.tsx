@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Project,
   companyDisplayName,
@@ -359,7 +360,7 @@ const AboutJson = () => (
   </pre>
 )
 
-type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS' | 'FETCH_PORTFOLIO' | 'OPEN_RESUME'
+type CommandResult = React.ReactNode | 'OPEN_GITHUB' | 'OPEN_WORK' | 'CLEAR' | 'FETCH_STATUS' | 'FETCH_PORTFOLIO' | 'OPEN_RESUME' | 'OPEN_CAREER'
 
 const COMMANDS: Record<string, { description: string; action: () => CommandResult }> = {
   'help': {
@@ -371,7 +372,7 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
           <div><span className="text-[#79c0ff]">help</span>          Show this help message</div>
           <div><span className="text-[#79c0ff]">whoami</span>        Display current user</div>
           <div><span className="text-[#79c0ff]">resume</span>        View resume (vim mode)</div>
-          <div><span className="text-[#79c0ff]">portfolio</span>     View project portfolio</div>
+          <div><span className="text-[#79c0ff]">career</span>        View career portfolio</div>
           <div><span className="text-[#79c0ff]">status</span>        Check system status</div>
           <div><span className="text-[#79c0ff]">open --github</span> Open GitHub profile</div>
           <div><span className="text-[#79c0ff]">open --work</span>   Open work project</div>
@@ -392,9 +393,9 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
     description: 'Check system status',
     action: () => 'FETCH_STATUS',
   },
-  'portfolio': {
-    description: 'View project portfolio',
-    action: () => 'FETCH_PORTFOLIO',
+  'career': {
+    description: 'View career portfolio',
+    action: () => 'OPEN_CAREER',
   },
   'open --github': {
     description: 'Open GitHub profile',
@@ -411,6 +412,7 @@ const COMMANDS: Record<string, { description: string; action: () => CommandResul
 }
 
 export default function Home() {
+  const router = useRouter()
   const [introPhase, setIntroPhase] = useState<IntroPhase>('typing-whoami')
   const [typedText, setTypedText] = useState('')
   const [showCursor, setShowCursor] = useState(true)
@@ -618,6 +620,9 @@ export default function Home() {
           return newHistory
         })
         setIsLoading(false)
+      } else if (result === 'OPEN_CAREER') {
+        setHistory(prev => [...prev, { command: cmd, output: <div className="text-[#8b949e]">Opening career page...</div> }])
+        router.push('/career')
       } else if (result === 'CLEAR') {
         setHistory([])
       } else if (result === 'OPEN_RESUME') {
