@@ -304,7 +304,10 @@ function ProjectCard({ project }: { project: Project }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="mb-4 border-l-2 border-[#238636] bg-[#161b22] p-4 transition-colors hover:bg-[#1c2128]">
+    <div
+      onClick={() => setIsExpanded(!isExpanded)}
+      className="mb-4 cursor-pointer border-l-2 border-[#238636] bg-[#161b22] p-4 transition-all duration-200 hover:scale-[1.01] hover:border-[#2ea043] hover:bg-[#1c2128] hover:shadow-lg hover:shadow-[#238636]/20"
+    >
       {/* Header */}
       <div className="mb-2 flex items-start justify-between">
         <div className="flex-1">
@@ -319,12 +322,9 @@ function ProjectCard({ project }: { project: Project }) {
             <span>🏢 {project.company}</span>
           </div>
         </div>
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="ml-4 text-[#8b949e] transition-colors hover:text-[#c9d1d9]"
-        >
+        <div className="ml-4 text-[#8b949e] transition-colors">
           {isExpanded ? "▼" : "▶"}
-        </button>
+        </div>
       </div>
 
       {/* Expandable Content */}
