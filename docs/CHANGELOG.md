@@ -4,6 +4,15 @@
 
 <!-- CHANGELOG_START -->
 
+## v0.0.14
+`2026.02.19 00:00`
+
+Claude Code 불필요한 파일 탐색 방지를 위한 .claudeignore 추가
+
+- node_modules/, .next/, .vercel/ 등 빌드 산출물 및 의존성 제외
+
+---
+
 ## v0.0.13
 `2026.02.02 22:16`
 
