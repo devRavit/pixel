@@ -4,7 +4,10 @@ stash 프로젝트의 프론트엔드 애플리케이션
 
 ## Recent Changes
 
-[![v0.0.13](https://img.shields.io/badge/v0.0.13-purple)](./docs/CHANGELOG.md#v0013) `2026.02.02 22:16`
+[![v0.0.14](https://img.shields.io/badge/v0.0.14-purple)](./docs/CHANGELOG.md#v0014) `2026.02.19 00:00`
+- node_modules/, .next/, .vercel/ 등 빌드 산출물 및 의존성 제외
+
+[![v0.0.13](https://img.shields.io/badge/v0.0.13-gray)](./docs/CHANGELOG.md#v0013) `2026.02.02 22:16`
 - `/career` 경로에 경력 포트폴리오 페이지 추가
 - 경력 기술서 HTML 기반 전체 내용 구현 (8개 프로젝트)
 - Gantt 차트 형식의 경력 타임라인 (자동 계산된 경력 기간)
@@ -20,12 +23,6 @@ stash 프로젝트의 프론트엔드 애플리케이션
 - 코드 블록 구문 강조 (vscDarkPlus 테마)
 - 429 Rate Limit 에러 시 친근한 에러 메시지 표시
 - Welcome 배너 ASCII 아트 추가
-
-[![v0.0.11](https://img.shields.io/badge/v0.0.11-gray)](./docs/CHANGELOG.md#v0011) `2026.01.15 01:30`
-- `portfolio` 명령어 추가 (stash API 연동)
-- lib/portfolio.ts 추가 (타입 정의 및 API 함수)
-- 회사별 프로젝트 그룹핑 및 Task 목록 표시
-- fetchProjects, fetchProjectById API 함수 구현
 
 
 [전체 변경 내역 →](./docs/CHANGELOG.md)
